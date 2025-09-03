@@ -1,7 +1,271 @@
-# 
-def add_numbers(a, b):
-    return a + b
+####~~~~~ Excise 1 ~~~~~######
 
-# 
-result = add_numbers(5, 7)
-print("result:", result)
+#Example 1: Repetitive Calculations
+# Function to calculate area of a rectangle
+def area_rectangle(length, width):
+    return length * width
+
+# Function to calculate area of a circle
+def area_circle(radius):
+    pi = 3.14
+    return pi * (radius ** 2)
+
+# Rectangle
+length1, width1 = 10, 5
+length2, width2 = 15, 7
+
+area_rectangle1 = area_rectangle(length1, width1)
+area_rectangle2 = area_rectangle(length2, width2)
+
+# Circle
+radius1, radius2 = 4, 6
+
+area_circle1 = area_circle(radius1)
+area_circle2 = area_circle(radius2)
+
+# Print 
+print("Area of first rectangle:", area_rectangle1)
+print("Area of second rectangle:", area_rectangle2)
+print("Area of first circle:", area_circle1)
+print("Area of second circle:", area_circle2)
+
+#Example 2: Complex Logic in Loops
+# Function to check odd or even
+def check_odd_even(numbers):
+    for num in numbers:
+        if num % 2 == 0:
+            print(f"{num} is even.")
+        else:
+            print(f"{num} is odd.")
+
+# Lists of numbers
+numbers1 = [10, 15, 22, 29, 30]
+numbers2 = [1, 4, 7, 9, 12]
+numbers3 = [100, 150, 200]
+
+# Apply the function to each list
+check_odd_even(numbers1)
+check_odd_even(numbers2)
+check_odd_even(numbers3)
+
+
+#Example 3: Redundant Code for Calculating Discounts
+# Function to calculate the price after discount
+def calculate_final_price(price, discount):
+    return price - (price * discount)
+
+# prices and discounts
+price1, discount1 = 100, 0.10
+price2, discount2 = 250, 0.15
+price3, discount3 = 50, 0.05
+
+# Calculate final prices
+final_price1 = calculate_final_price(price1, discount1)
+final_price2 = calculate_final_price(price2, discount2)
+final_price3 = calculate_final_price(price3, discount3)
+
+# Print results
+print(f"Final price for customer1: ${final_price1}")
+print(f"Final price for customer2: ${final_price2}")
+print(f"Final price for customer3: ${final_price3}")
+
+
+####~~~~~ Excise 2 ~~~~~######
+
+# Question 1: Simple Key-Value Parsing
+# original data string
+data = " Name: John Doe ; Age : 25;  CITY: New York ; Occupation: Software Engineer "
+
+# strip the whitespace
+data = data.strip()
+
+# split into pairs
+pairs = data.split(';')
+
+# deal with each pair
+result = {}
+for pair in pairs:
+    if ':' in pair:  
+        key, value = pair.split(':', 1)  
+        key = key.strip().lower()        
+        value = value.strip()           
+        result[key] = value
+
+print(result)
+
+# Question 2: Parsing Repeated Data
+# data original
+data = "Name: Alice, Age: 30, City: Los Angeles | Name: Bob, Age: 25, City: Chicago | Name: Charlie , Age: 35, City: New York"
+
+# split by pipe → each person
+people_data = data.split('|')
+
+# process each person's data
+result = []
+for person in people_data:
+    person_dict = {}
+    attributes = person.split(',')
+    for attr in attributes:
+        if ':' in attr:
+            key, value = attr.split(':', 1)
+            key = key.strip().lower()     
+            value = value.strip()         
+            person_dict[key] = value
+    result.append(person_dict)
+
+print(result)
+
+# Question 3: Parsing Complex Data with Inconsistent Formatting
+import re
+# data string
+data = "product_name: Laptop, price = $999, brand - Dell ; product_name: Smartphone, price: $599 , brand = Samsung ; product_name - Tablet , price=299,brand : Apple"
+
+# split into products by semicolon
+products = data.split(';')
+
+result = []
+
+# process with each product
+for product in products:
+    product_dict = {}
+    # split into attributes by comma
+    attributes = product.split(',')
+    for attr in attributes:
+        # Step 3: split by first occurrence of separator (:, =, or -)
+        parts = re.split(r'[:=\-]', attr, maxsplit=1)
+        if len(parts) == 2:
+            key, value = parts
+            key = key.strip().lower()
+            value = value.strip()
+            product_dict[key] = value
+    if product_dict:  # avoid empty dicts from extra semicolons
+        result.append(product_dict)
+
+print(result)
+
+# Question 4: Nested Data Parsing
+# data string
+data = "employee_name: Sarah, department: HR, roles: recruiter, trainer | employee_name: Mike , department: Engineering , roles: developer, team lead | employee_name: Alice , department: HR , roles: recruiter"
+
+# split by employees
+employees = data.split('|')
+
+result = []
+
+# process each employee
+for emp in employees:
+    emp_dict = {}
+    attributes = emp.split(',')
+    
+    current_key = None
+    for attr in attributes:
+        if ':' in attr:
+            key, value = attr.split(':', 1)
+            key = key.strip().lower()
+            value = value.strip()
+            
+            if key == "roles":
+                emp_dict[key] = [v.strip() for v in value.split(',')]
+                current_key = key
+            else:
+                emp_dict[key] = value
+                current_key = key
+        else:
+            if current_key == "roles":
+                emp_dict["roles"].append(attr.strip())
+    
+    result.append(emp_dict)
+
+print(result)
+
+
+# Question 5: Parsing Numerical Data with Missing Values
+# data string
+data = "device_id: 001, temp: 72, humidity: 45 | device_id: 002, temp: N/A, humidity: 50 | device_id: 003, temp: 68, humidity: N/A"
+
+# split into devices
+devices = data.split('|')
+
+result = []
+
+# process each device
+for dev in devices:
+    dev_dict = {}
+    attributes = dev.split(',')
+    for attr in attributes:
+        if ':' in attr:
+            key, value = attr.split(':', 1)
+            key = key.strip().lower()
+            value = value.strip()
+
+            if value.upper() == "N/A":
+                value = None
+            else:
+                if value.isdigit():
+                    value = int(value)
+
+            dev_dict[key] = value
+
+    result.append(dev_dict)
+
+print(result)
+
+
+#  Exercise: Conditions and Loops
+#  Question 1: Basic Conditions
+x = 15
+
+if x > 10:
+    print(f"{x} is greater than 10.")
+elif x == 10:
+    print(f"{x} is equal to 10.")
+else:
+    print(f"{x} is less than 10.")
+
+# Question 2: Looping Over a List
+numbers = [10, 21, 32, 43, 54]
+for num in numbers:
+    if num % 2 == 0:
+        print(f"{num} is even.")
+    else:
+        print(f"{num} is odd.")
+
+# Question 3: Finding Words in a String
+sentence = 'Python is fun and powerful'
+if "fun" in sentence:
+    print("The sentence contains the word 'fun'.")
+elif "boring" in sentence:
+    print("The sentence contains the word 'boring'.")
+else:
+    print("The sentence contains neither 'fun' nor 'boring'.")
+
+# Question 4: Counting Occurrences in a List
+grades = [85, 92, 78, 90, 92, 85, 92]
+
+grade_counts = {}
+
+for grade in grades:
+    if grade in grade_counts:
+        grade_counts[grade] += 1
+    else:
+        grade_counts[grade] = 1
+
+for grade, count in grade_counts.items():
+    print(f"Grade {grade} appears {count} times.")
+
+# Question 5: Looping Over a Dictionary
+countries = {
+    'Canada': 38,
+    'Brazil': 212,
+    'India': 1391,
+    'Germany': 83,
+    'Japan': 126
+}
+
+for country, population in countries.items():
+    print(f"{country} has a population of {population} million.")
+    if population > 100:
+        print(f"{country} is heavily populated.")
+
+
+
